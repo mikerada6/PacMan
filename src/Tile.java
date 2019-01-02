@@ -75,15 +75,6 @@ public class Tile {
         return isWall;
     }
 
-    public void playerMoveIn()
-    {
-        isPlayer=true;
-    }
-    public void playerMoveOut()
-    {
-        isPlayer=false;
-    }
-
     public int getX()
     {
         return x;

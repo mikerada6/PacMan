@@ -57,8 +57,6 @@ public class Ghost {
     public void update() {
         if (isBorn) {
             if (!GamePanel.board[x][y].getNeighbor(direction).isWall()) {
-                GamePanel.board[x][y].getNeighbor(direction).playerMoveIn();
-                GamePanel.board[x][y].playerMoveOut();
                 x = GamePanel.board[x][y].getNeighbor(direction).getX();
                 y = GamePanel.board[x][y].getNeighbor(direction).getY();
             }

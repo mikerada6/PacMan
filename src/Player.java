@@ -19,7 +19,6 @@ public class Player {
     public Player() {
         x = 12;
         y = 26;
-        GamePanel.board[x][y].playerMoveIn();
         direction = LEFT;
         tryDirection = -1;
     }
@@ -62,15 +61,11 @@ public class Player {
 
     public void update() {
         if (tryDirection != -1 && !GamePanel.board[x][y].getNeighbor(tryDirection).isWall()) {
-            GamePanel.board[x][y].getNeighbor(tryDirection).playerMoveIn();
-            GamePanel.board[x][y].playerMoveOut();
             x = GamePanel.board[x][y].getNeighbor(tryDirection).getX();
             y = GamePanel.board[x][y].getNeighbor(tryDirection).getY();
             direction = tryDirection;
             tryDirection = -1;
         } else if (!GamePanel.board[x][y].getNeighbor(direction).isWall()) {
-            GamePanel.board[x][y].getNeighbor(direction).playerMoveIn();
-            GamePanel.board[x][y].playerMoveOut();
             x = GamePanel.board[x][y].getNeighbor(direction).getX();
             y = GamePanel.board[x][y].getNeighbor(direction).getY();
         }
