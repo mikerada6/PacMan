@@ -12,11 +12,15 @@ public class Ghost {
     private boolean isBorn;
     private int mode;
     private int tilesPerSecond = 11;
+    protected int homeX;
+    protected int homeY;
 
     public Ghost(int x, int y) {
         this.x = x;
         this.y = y;
         isBorn = false;
+        this.homeX=0;
+        this.homeY=0;
     }
 
     public void draw(Graphics2D g) {

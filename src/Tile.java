@@ -5,7 +5,7 @@ public class Tile {
     private int x;
     private int y;
     private boolean isWall;
-    private boolean drawSquares=true;
+    private boolean drawSquares=false;
     private boolean isPlayer;
     private Tile up;
     private Tile down;

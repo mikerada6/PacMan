@@ -8,6 +8,8 @@ public class Blinky extends Ghost {
         for (int i=0;i<sprites.length;i++)
         {
             sprites[i]=GamePanel.spriteSheet.grabImage(i+1,5, 16, 16);
+            this.homeX=35;
+            this.homeY=0;
         }
     }
 }
