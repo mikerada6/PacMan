@@ -77,4 +77,12 @@ public class Ghost {
         isBorn = true;
     }
 
+    public int getX() {
+        return x;
+    }
+
+    public int getY() {
+        return y;
+    }
+
 }

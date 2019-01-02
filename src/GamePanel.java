@@ -14,7 +14,7 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
     public static final int TILEHEIGHTCOUNT = 36;
     public static final int WIDTH = TILESIZE * TILEWIDTHCOUNT;
     public static final int HEIGHT = TILESIZE * TILEHEIGHTCOUNT;
-    public static final int FPS = 30;
+    public static final int FPS = 45;
     public static Tile[][] board;
     public static Player p;
     public static long clock = 0;
@@ -118,6 +118,9 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
         ghosts[2] = new Inky(14, 17);
         ghosts[3] = new Clyde(15, 17);
         ghosts[0].born();
+        //ghosts[1].born();
+        //ghosts[2].born();
+        //ghosts[3].born();
     }
 
     public void addNotify() {
@@ -170,10 +173,18 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
     }
 
     public void gameUpdate() {
+        //check to see if you are dead
+        for(int i=0;i<ghosts.length;i++)
+        {
+            if(p.getX()==ghosts[i].getX() && p.getY()==ghosts[i].getY())
+            {
+                p.die();
+            }
+        }
         p.update();
         for(int i=0;i<ghosts.length;i++)
         {
-            ghosts[i].update();
+           // ghosts[i].update();
         }
         clock++;
 

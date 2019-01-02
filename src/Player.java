@@ -11,6 +11,7 @@ public class Player {
     private int direction;
     private int tryDirection;
     private int tilesPerSecond = 11;
+    private int lives;
 
     public Player(int x, int y) {
         this.x = x;
@@ -22,6 +23,7 @@ public class Player {
         y = 26;
         direction = LEFT;
         tryDirection = -1;
+        lives=3;
     }
 
     public int getX() {
@@ -58,6 +60,16 @@ public class Player {
         } else if (_direction == RIGHT) {
             this.tryDirection = RIGHT;
         }
+    }
+
+    public void die()
+    {
+        x = 12;
+        y = 26;
+        direction = LEFT;
+        tryDirection = -1;
+        lives--;
+
     }
 
     public void update() {
