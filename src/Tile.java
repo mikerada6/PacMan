@@ -2,18 +2,15 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 
 public class Tile {
-    private BufferedImage image;
-    private Graphics2D g;
     private int x;
     private int y;
     private boolean isWall;
-    private boolean drawSquares=false;
+    private boolean drawSquares=true;
     private boolean isPlayer;
     private Tile up;
     private Tile down;
     private Tile left;
     private Tile right;
-
     public Tile(int x, int y) {
         this();
         this.x = x;
@@ -23,8 +20,6 @@ public class Tile {
     public Tile() {
         x = 0;
         y = 0;
-        image = new BufferedImage(GamePanel.TILESIZE, GamePanel.TILESIZE, BufferedImage.TYPE_INT_RGB);
-        g = (Graphics2D) image.getGraphics();
         isPlayer=false;
         left=null;
         right=null;
@@ -56,27 +51,19 @@ public class Tile {
             return right;
         else return null;
     }
-    public BufferedImage draw() {
+    public void draw(Graphics2D g) {
         if (isWall) {
-            g.setColor(Color.BLACK);
-            g.fillRect(0, 0, GamePanel.TILESIZE, GamePanel.TILESIZE);
+            g.setColor(Color.BLUE);
+            g.fillRect(x*GamePanel.TILESIZE, y*GamePanel.TILESIZE, GamePanel.TILESIZE, GamePanel.TILESIZE);
         } else {
-            g.setColor(Color.WHITE);
-            g.fillRect(0, 0, GamePanel.TILESIZE, GamePanel.TILESIZE);
+            g.setColor(Color.BLACK);
+            g.fillRect(x*GamePanel.TILESIZE, y*GamePanel.TILESIZE, GamePanel.TILESIZE, GamePanel.TILESIZE);
             if(drawSquares) {
-                g.setColor(Color.BLACK);
-                g.drawRect(0, 0, GamePanel.TILESIZE, GamePanel.TILESIZE);
+                g.setColor(Color.WHITE);
+                g.drawRect(x*GamePanel.TILESIZE, y*GamePanel.TILESIZE, GamePanel.TILESIZE, GamePanel.TILESIZE);
             }
         }
-        if(isPlayer)
-        {
-            g.setColor(Color.RED);
-            g.fillOval(0,0,GamePanel.TILESIZE, GamePanel.TILESIZE);
-        }
 
-        g.setColor(Color.BLACK);
-        g.drawString(""+y,0,0);
-        return image;
     }
 
     public void setIsWall(boolean _isWall) {
@@ -105,5 +92,14 @@ public class Tile {
     public int getY()
     {
         return y;
+    }
+
+    public static BufferedImage resize(BufferedImage img, int height, int width) {
+        Image tmp = img.getScaledInstance(width, height, Image.SCALE_SMOOTH);
+        BufferedImage resized = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
+        Graphics2D g2d = resized.createGraphics();
+        g2d.drawImage(tmp, 0, 0, null);
+        g2d.dispose();
+        return resized;
     }
 }

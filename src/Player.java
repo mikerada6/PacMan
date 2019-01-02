@@ -1,11 +1,13 @@
+import java.awt.*;
+import java.awt.image.BufferedImage;
+
 public class Player {
-    public static final int UP = 0;
-    public static final int DOWN = 1;
+    public static final int UP = 3;
+    public static final int DOWN = 4;
     public static final int LEFT = 2;
-    public static final int RIGHT = 3;
+    public static final int RIGHT = 1;
     private int x;
     private int y;
-    private Tile[][] board;
     private int direction;
     private int tryDirection;
 
@@ -14,12 +16,10 @@ public class Player {
         this.y = y;
     }
 
-    public Player(Tile[][] board) {
-        this.board = board;
-        //740
-        x = 740 % GamePanel.TILEWIDTHCOUNT;
-        y = 740 / GamePanel.TILEWIDTHCOUNT;
-        board[x][y].playerMoveIn();
+    public Player() {
+        x = 12;
+        y = 26;
+        GamePanel.board[x][y].playerMoveIn();
         direction = LEFT;
         tryDirection = -1;
     }
@@ -30,6 +30,10 @@ public class Player {
 
     public int getY() {
         return y;
+    }
+
+    public int getDirection() {
+        return direction;
     }
 
     public void setDirection(int _direction) {
@@ -57,18 +61,32 @@ public class Player {
     }
 
     public void update() {
-        if (tryDirection != -1 && !board[x][y].getNeighbor(tryDirection).isWall()) {
-            board[x][y].getNeighbor(tryDirection).playerMoveIn();
-            board[x][y].playerMoveOut();
-            x=board[x][y].getNeighbor(tryDirection).getX();
-            y=board[x][y].getNeighbor(tryDirection).getY();
-            direction=tryDirection;
-            tryDirection=-1;
-        } else if (!board[x][y].getNeighbor(direction).isWall()) {
-            board[x][y].getNeighbor(direction).playerMoveIn();
-            board[x][y].playerMoveOut();
-            x=board[x][y].getNeighbor(direction).getX();
-            y=board[x][y].getNeighbor(direction).getY();
+        if (tryDirection != -1 && !GamePanel.board[x][y].getNeighbor(tryDirection).isWall()) {
+            GamePanel.board[x][y].getNeighbor(tryDirection).playerMoveIn();
+            GamePanel.board[x][y].playerMoveOut();
+            x = GamePanel.board[x][y].getNeighbor(tryDirection).getX();
+            y = GamePanel.board[x][y].getNeighbor(tryDirection).getY();
+            direction = tryDirection;
+            tryDirection = -1;
+        } else if (!GamePanel.board[x][y].getNeighbor(direction).isWall()) {
+            GamePanel.board[x][y].getNeighbor(direction).playerMoveIn();
+            GamePanel.board[x][y].playerMoveOut();
+            x = GamePanel.board[x][y].getNeighbor(direction).getX();
+            y = GamePanel.board[x][y].getNeighbor(direction).getY();
         }
+    }
+
+    public void draw(Graphics2D g) {
+
+        BufferedImage temp=null;
+        if(GamePanel.clock%4<2) {
+            temp = GamePanel.spriteSheet.grabImage(1, this.getDirection(), 16, 16);
+        }
+        else
+        {
+            temp = GamePanel.spriteSheet.grabImage(2, this.getDirection(), 16, 16);
+        }
+        temp= Tile.resize(temp, GamePanel.TILESIZE, GamePanel.TILESIZE);
+        g.drawImage(temp,null,x*GamePanel.TILESIZE, y*GamePanel.TILESIZE);
     }
 }
