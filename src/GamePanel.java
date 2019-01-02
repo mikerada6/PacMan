@@ -1,20 +1,23 @@
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.awt.image.BufferedImage;
 
-public class GamePanel extends JPanel implements Runnable {
+public class GamePanel extends JPanel implements Runnable, KeyListener {
     //FIELDS
-    public static final int TILESIZE = 25;
-    public static final int TILEWIDTHCOUNT=28;
-    public static final int TILEHEIGHTCOUNT=36;
+    public static final int TILESIZE = 28;
+    public static final int TILEWIDTHCOUNT = 28;
+    public static final int TILEHEIGHTCOUNT = 36;
     public static final int WIDTH = TILESIZE * TILEWIDTHCOUNT;
     public static final int HEIGHT = TILESIZE * TILEHEIGHTCOUNT;
+    private static final int FPS = 30;
     public boolean running;
     private Tile[][] board;
     private BufferedImage image;
     private Graphics2D g;
-    private static final int FPS=30;
     private double averageFPS;
+    private Player p;
 
     private Thread thread;
 
@@ -23,15 +26,13 @@ public class GamePanel extends JPanel implements Runnable {
         setPreferredSize(new Dimension(WIDTH, HEIGHT));
         setFocusable(true);
         requestFocus();
-        board= new Tile[WIDTH/TILESIZE][HEIGHT/TILESIZE];
-        for(int x=0;x<board.length;x++)
-        {
-            for(int y=0;y<board[x].length;y++)
-            {
-                board[x][y]=new Tile(x,y);
+        board = new Tile[WIDTH / TILESIZE][HEIGHT / TILESIZE];
+        for (int x = 0; x < board.length; x++) {
+            for (int y = 0; y < board[x].length; y++) {
+                board[x][y] = new Tile(x, y);
             }
         }
-        int[] levelOne={
+        int[] levelOne = {
                 -1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,
                 -1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,
                 -1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,
@@ -59,8 +60,8 @@ public class GamePanel extends JPanel implements Runnable {
                 672,-1,674,675,676,677,-1,679,680,681,682,683,-1,685,686,-1,688,689,690,691,692,-1,694,695,696,697,-1,699,
                 700,-1,702,703,704,705,-1,707,708,709,710,711,-1,713,714,-1,716,717,718,719,720,-1,722,723,724,725,-1,727,
                 728,-1,-1,-1,732,733,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,750,751,-1,-1,-1,755,
-                756,757,758,-1,760,761,-1,763,764,-1,766,767,768,769,770,771,772,773,-1,775,776,-1,778,779,-1,-1,-1,783,
-                784,785,786,-1,788,789,-1,791,792,-1,794,795,796,797,798,799,800,801,-1,803,804,-1,806,807,-1,-1,-1,811,
+                756,757,758,-1,760,761,-1,763,764,-1,766,767,768,769,770,771,772,773,-1,775,776,-1,778,779,-1,781,782,783,
+                784,785,786,-1,788,789,-1,791,792,-1,794,795,796,797,798,799,800,801,-1,803,804,-1,806,807,-1,809,810,811,
                 812,-1,-1,-1,-1,-1,-1,819,820,-1,-1,-1,824,825,826,827,-1,-1,-1,831,832,-1,-1,-1,-1,-1,-1,839,
                 840,-1,842,843,844,845,846,847,848,849,850,-1,852,853,854,855,-1,857,858,859,860,861,862,863,864,865,-1,867,
                 868,-1,870,871,872,873,874,875,876,877,878,-1,880,881,882,883,-1,885,886,887,888,889,890,891,892,893,-1,895,
@@ -69,13 +70,36 @@ public class GamePanel extends JPanel implements Runnable {
                 -1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,
                 -1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1
         };
-        for (int i=0;i<levelOne.length;i++)
-        {
-            int num=levelOne[i];
-            if(num!=-1) {
+
+        for (int i = 0; i < levelOne.length; i++) {
+            int num = levelOne[i];
+            if (num != -1) {
                 board[num % TILEWIDTHCOUNT][num / TILEWIDTHCOUNT].setIsWall(true);
             }
         }
+        for (int x = 0; x < board.length; x++) {
+            for (int y = 0; y < board[x].length; y++) {
+                try {
+                    board[x][y].setNeighbor(Player.UP, board[x][y - 1]);
+                } catch (Exception e) {
+                }
+                try {
+                    board[x][y].setNeighbor(Player.DOWN, board[x][y + 1]);
+                } catch (Exception e) {
+                }
+                try {
+                    board[x][y].setNeighbor(Player.LEFT, board[x - 1][y]);
+                } catch (Exception e) {
+                }
+                try {
+                    board[x][y].setNeighbor(Player.RIGHT, board[x + 1][y]);
+                } catch (Exception e) {
+                }
+            }
+        }
+        board[0][17].setNeighbor(Player.LEFT, board[board.length-1][17]);
+        board[board.length-1][17].setNeighbor(Player.RIGHT,board[0][17] );
+        p = new Player(board);
     }
 
     public void addNotify() {
@@ -84,68 +108,93 @@ public class GamePanel extends JPanel implements Runnable {
             thread = new Thread(this);
             thread.start();
         }
+        addKeyListener(this);
     }
 
     public void run() {
         running = true;
 
-        image = new BufferedImage(WIDTH,HEIGHT, BufferedImage.TYPE_INT_RGB);
+        image = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_RGB);
         g = (Graphics2D) image.getGraphics();
 
         long startTime;
         long URDTimeMillis;
         long waitTime;
-        long totalTime=0;
+        long totalTime = 0;
 
-        int frameCount =0;
+        int frameCount = 0;
         int maxFrameCount = 30;
 
-        long targetTime = 1000/FPS;
+        long targetTime = 1000 / FPS;
 
         while (running) {
-            startTime=System.nanoTime();
+            startTime = System.nanoTime();
             gameUpdate();
             gameRender();
             gameDraw();
 
-            URDTimeMillis = (System.nanoTime()-startTime) /1000000;
+            URDTimeMillis = (System.nanoTime() - startTime) / 1000000;
             waitTime = targetTime - URDTimeMillis;
 
-            try{
+            try {
                 Thread.sleep(waitTime);
-            }catch(Exception e)
-            {
+            } catch (Exception e) {
 
             }
-            totalTime += System.nanoTime()-startTime;
+            totalTime += System.nanoTime() - startTime;
             frameCount++;
-            if(frameCount == maxFrameCount){
-                averageFPS =1000.0/ ((totalTime/frameCount)/1000000.0);
-                frameCount=0;
-                totalTime=0;
+            if (frameCount == maxFrameCount) {
+                averageFPS = 1000.0 / ((totalTime / frameCount) / 1000000.0);
+                frameCount = 0;
+                totalTime = 0;
             }
         }
     }
 
     public void gameUpdate() {
+        p.update();
 
     }
 
     public void gameRender() {
-        for(int x=0;x<board.length;x++)
-        {
-            for(int y=0;y<board[x].length;y++)
-            {
-                g.drawImage(board[x][y].getTileGraphics(),25*x,25*y,null);
+        for (int x = 0; x < board.length; x++) {
+            for (int y = 0; y < board[x].length; y++) {
+                g.drawImage(board[x][y].draw(), TILESIZE * x, TILESIZE * y, null);
             }
         }
         g.setColor(Color.BLACK);
-        g.drawString("FPS: " + averageFPS ,10,10);
+        g.drawString("FPS: " + averageFPS, 10, 10);
     }
 
     public void gameDraw() {
-    Graphics g2 = this.getGraphics();
-    g2.drawImage(image,0,0,null);
-    g2.dispose();
+        Graphics g2 = this.getGraphics();
+        g2.drawImage(image, 0, 0, null);
+        g2.dispose();
     }
+
+    public void keyTyped(KeyEvent key) {
+    }
+
+    public void keyPressed(KeyEvent key) {
+        int keyCode = key.getKeyCode();
+        if (keyCode == KeyEvent.VK_LEFT) {
+            System.out.println("LEFT");
+            p.setTryDirection(Player.LEFT);
+        } else if (keyCode == KeyEvent.VK_UP) {
+            System.out.println("UP");
+            p.setTryDirection(Player.UP);
+        } else if (keyCode == KeyEvent.VK_DOWN) {
+            System.out.println("DOWN");
+            p.setTryDirection(Player.DOWN);
+        } else if (keyCode == KeyEvent.VK_RIGHT) {
+            System.out.println("RIGHT");
+            p.setTryDirection(Player.RIGHT);
+        }
+    }
+
+    public void keyReleased(KeyEvent key) {
+        p.setTryDirection(-1);
+        System.out.println("NONE");
+    }
+
 }
