@@ -10,6 +10,7 @@ public class Player {
     private int y;
     private int direction;
     private int tryDirection;
+    private int tilesPerSecond = 11;
 
     public Player(int x, int y) {
         this.x = x;
@@ -60,28 +61,28 @@ public class Player {
     }
 
     public void update() {
-        if (tryDirection != -1 && !GamePanel.board[x][y].getNeighbor(tryDirection).isWall()) {
-            x = GamePanel.board[x][y].getNeighbor(tryDirection).getX();
-            y = GamePanel.board[x][y].getNeighbor(tryDirection).getY();
-            direction = tryDirection;
-            tryDirection = -1;
-        } else if (!GamePanel.board[x][y].getNeighbor(direction).isWall()) {
-            x = GamePanel.board[x][y].getNeighbor(direction).getX();
-            y = GamePanel.board[x][y].getNeighbor(direction).getY();
+        if (GamePanel.clock % (GamePanel.FPS/tilesPerSecond) == 0 ) {
+            if (tryDirection != -1 && !GamePanel.board[x][y].getNeighbor(tryDirection).isWall()) {
+                x = GamePanel.board[x][y].getNeighbor(tryDirection).getX();
+                y = GamePanel.board[x][y].getNeighbor(tryDirection).getY();
+                direction = tryDirection;
+                tryDirection = -1;
+            } else if (!GamePanel.board[x][y].getNeighbor(direction).isWall()) {
+                x = GamePanel.board[x][y].getNeighbor(direction).getX();
+                y = GamePanel.board[x][y].getNeighbor(direction).getY();
+            }
         }
     }
 
     public void draw(Graphics2D g) {
 
-        BufferedImage temp=null;
-        if(GamePanel.clock%4<2) {
+        BufferedImage temp = null;
+        if (GamePanel.clock % 4 < 2) {
             temp = GamePanel.spriteSheet.grabImage(1, this.getDirection(), 16, 16);
-        }
-        else
-        {
+        } else {
             temp = GamePanel.spriteSheet.grabImage(2, this.getDirection(), 16, 16);
         }
-        temp= Tile.resize(temp, GamePanel.TILESIZE, GamePanel.TILESIZE);
-        g.drawImage(temp,null,x*GamePanel.TILESIZE, y*GamePanel.TILESIZE);
+        temp = Tile.resize(temp, GamePanel.TILESIZE, GamePanel.TILESIZE);
+        g.drawImage(temp, null, x * GamePanel.TILESIZE, y * GamePanel.TILESIZE);
     }
 }

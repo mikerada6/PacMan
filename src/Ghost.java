@@ -11,6 +11,7 @@ public class Ghost {
     private int direction;
     private boolean isBorn;
     private int mode;
+    private int tilesPerSecond = 11;
 
     public Ghost(int x, int y) {
         this.x = x;
@@ -19,21 +20,19 @@ public class Ghost {
     }
 
     public void draw(Graphics2D g) {
-    if(mode!=FRIGHTENED) {
-        if (!isBorn) {
-            BufferedImage temp = sprites[(int) GamePanel.clock % sprites.length];
-            temp = Tile.resize(temp, GamePanel.TILESIZE, GamePanel.TILESIZE);
-            g.drawImage(temp, null, x * GamePanel.TILESIZE, y * GamePanel.TILESIZE);
+        if (mode != FRIGHTENED) {
+            if (!isBorn) {
+                BufferedImage temp = sprites[(int) GamePanel.clock % sprites.length];
+                temp = Tile.resize(temp, GamePanel.TILESIZE, GamePanel.TILESIZE);
+                g.drawImage(temp, null, x * GamePanel.TILESIZE, y * GamePanel.TILESIZE);
+            } else {
+                BufferedImage temp = getSprite(direction);
+                temp = Tile.resize(temp, GamePanel.TILESIZE, GamePanel.TILESIZE);
+                g.drawImage(temp, null, x * GamePanel.TILESIZE, y * GamePanel.TILESIZE);
+            }
         } else {
-            BufferedImage temp = getSprite(direction);
-            temp = Tile.resize(temp, GamePanel.TILESIZE, GamePanel.TILESIZE);
-            g.drawImage(temp, null, x * GamePanel.TILESIZE, y * GamePanel.TILESIZE);
-        }
-    }
-    else
-    {
 
-    }
+        }
     }
 
     public BufferedImage getSprite(int direction) {
@@ -56,14 +55,16 @@ public class Ghost {
 
     public void update() {
         if (isBorn) {
-            if (!GamePanel.board[x][y].getNeighbor(direction).isWall()) {
-                x = GamePanel.board[x][y].getNeighbor(direction).getX();
-                y = GamePanel.board[x][y].getNeighbor(direction).getY();
-            }
-            if (GamePanel.board[x][y].getNeighbor(direction).isWall()) {
+            if (GamePanel.clock % (GamePanel.FPS / tilesPerSecond) == 0) {
+                if (!GamePanel.board[x][y].getNeighbor(direction).isWall()) {
+                    x = GamePanel.board[x][y].getNeighbor(direction).getX();
+                    y = GamePanel.board[x][y].getNeighbor(direction).getY();
+                }
+                if (GamePanel.board[x][y].getNeighbor(direction).isWall()) {
 
-                int[] directions = {Player.UP, Player.DOWN, Player.RIGHT, Player.LEFT};
-                direction = directions[(int) (Math.random() * 1000000) % directions.length];
+                    int[] directions = {Player.UP, Player.DOWN, Player.RIGHT, Player.LEFT};
+                    direction = directions[(int) (Math.random() * 1000000) % directions.length];
+                }
             }
         }
     }
