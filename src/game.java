@@ -5,6 +5,8 @@ public class game {
         JFrame window = new JFrame("Rezatron Pac-Man");
         window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
+        window.setContentPane(new GamePanel());
+
         window.pack();
         window.setVisible(true);
 
