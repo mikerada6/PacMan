@@ -1,7 +1,7 @@
-import javax.swing.JFrame;
+import javax.swing.*;
+
 public class game {
-    public static void main(String[] args)
-    {
+    public static void main(String[] args) {
         JFrame window = new JFrame("Rezatron Pac-Man");
         window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
@@ -9,6 +9,5 @@ public class game {
 
         window.pack();
         window.setVisible(true);
-
     }
 }
