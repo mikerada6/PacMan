@@ -14,7 +14,7 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
     public static final int TILEHEIGHTCOUNT = 36;
     public static final int WIDTH = TILESIZE * TILEWIDTHCOUNT;
     public static final int HEIGHT = TILESIZE * TILEHEIGHTCOUNT;
-    public static final int FPS = 45;
+    public static final int FPS = 150;
     public static Tile[][] board;
     public static Player p;
     public static long clock = 0;
@@ -26,6 +26,7 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
     private double averageFPS;
     private Thread thread;
     private Pellet[] pellets;
+    private PowerPellet[] powerPellets;
     public static int score;
 
     public GamePanel() {
@@ -36,6 +37,7 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
         requestFocus();
         board = new Tile[WIDTH / TILESIZE][HEIGHT / TILESIZE];
         pellets = new Pellet[240];
+        powerPellets = new PowerPellet[4];
         for (int x = 0; x < board.length; x++) {
             for (int y = 0; y < board[x].length; y++) {
                 board[x][y] = new Tile(x, y);
@@ -119,6 +121,8 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
                 -1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,
         };
 
+        int[] levelOnePowerPellets={169,194,729,754};
+
         for (int i = 0; i < levelOne.length; i++) {
             int num = levelOne[i];
             if (num != -1) {
@@ -134,6 +138,8 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
                 System.out.println(pelletCount);
             }
         }
+
+
         for (int x = 0; x < board.length; x++) {
             for (int y = 0; y < board[x].length; y++) {
                 try {
@@ -173,6 +179,15 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
         //ghosts[1].born();
         //ghosts[2].born();
         //ghosts[3].born();
+
+        pelletCount=0;
+        for (int i = 0; i < levelOnePowerPellets.length; i++) {
+            int num = levelOnePowerPellets[i];
+            if (num != -1) {
+                powerPellets[pelletCount]=new PowerPellet(num % TILEWIDTHCOUNT,num / TILEWIDTHCOUNT,ghosts);
+                pelletCount++;
+            }
+        }
     }
 
     public void addNotify() {
@@ -196,11 +211,12 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
         long totalTime = 0;
 
         int frameCount = 0;
-        int maxFrameCount = 30;
+        int maxFrameCount = FPS;
 
         long targetTime = 1000 / FPS;
 
         while (running) {
+
             startTime = System.nanoTime();
             gameUpdate();
             gameRender();
@@ -246,6 +262,13 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
                 score+=pellet.eat();
             }
         }
+        for(PowerPellet pellet : powerPellets)
+        {
+            if(pellet.isAlive() && p.getX()==pellet.getX() && p.getY()==pellet.getY())
+            {
+                score+=pellet.eat();
+            }
+        }
         int alivePellets=0;
         for(Pellet pellet : pellets)
         {
@@ -265,9 +288,14 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
                 board[x][y].draw(g);
             }
         }
-        for(Pellet p : pellets)
+        for(Pellet pellet : pellets)
         {
-            p.draw(g);
+            pellet.draw(g);
+        }
+
+        for(PowerPellet pellet : powerPellets)
+        {
+            pellet.draw(g);
         }
         for (int i = 0; i < ghosts.length; i++) {
             ghosts[i].draw(g);
