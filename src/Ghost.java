@@ -11,10 +11,10 @@ public class Ghost {
     BufferedImage[] sprites = new BufferedImage[7];
     protected int x;
     protected int y;
-    private int direction;
-    private boolean isBorn;
+    protected int direction;
+    protected boolean isBorn;
     private int mode;
-    private int tilesPerSecond = 11;
+    protected int tilesPerSecond = 11;
 
     public Ghost(int x, int y) {
         this.x = x;
@@ -61,15 +61,13 @@ public class Ghost {
 
 
     public void update() {
-        Tile[][] temp = copy(GamePanel.board);
         if (isBorn) {
             if (GamePanel.clock % (GamePanel.FPS / tilesPerSecond) == 0) {
                 if (!GamePanel.board[x][y].getNeighbor(direction).isWall()) {
-                    //x = GamePanel.board[x][y].getNeighbor(direction).getX();
-                    //y = GamePanel.board[x][y].getNeighbor(direction).getY();
+                    x = GamePanel.board[x][y].getNeighbor(direction).getX();
+                    y = GamePanel.board[x][y].getNeighbor(direction).getY();
                 }
-                if (GamePanel.board[x][y].getNeighbor(direction).isWall()) {
-
+                else {
                     int[] directions = {Player.UP, Player.DOWN, Player.RIGHT, Player.LEFT};
                     direction = directions[(int) (Math.random() * 1000000) % directions.length];
                 }
@@ -85,9 +83,24 @@ public class Ghost {
         isBorn = true;
     }
 
+    public void move(int x, int y)
+    {
+        this.x=x;
+        this.y=y;
+    }
+
     public int getX() {
         return x;
     }
+    public void setX(int x)
+    {
+        this.x=x;
+    }
+    public void setY(int y)
+    {
+        this.y=y;
+    }
+
 
     public int getY() {
         return y;

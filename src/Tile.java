@@ -108,6 +108,7 @@ public class Tile {
     public void setScores(int goalX, int goalY) {
         this.gScore = Integer.MAX_VALUE;
         this.fScore = Math.abs(this.x - goalX) + Math.abs(this.y - goalY);
+        cameFrom = null;
     }
 
     public int getGScore() {
@@ -126,30 +127,32 @@ public class Tile {
         this.fScore = score;
     }
 
-    public ArrayList<Tile> getNeighbors()
-    {
+    public ArrayList<Tile> getNeighbors() {
         ArrayList<Tile> ans = new ArrayList<Tile>();
 
-        if(up!=null)
+        if (up != null)
             ans.add(up);
-        if(down!=null)
+        if (down != null)
             ans.add(down);
-        if(left!=null)
+        if (left != null)
             ans.add(left);
-        if(right!=null)
+        if (right != null)
             ans.add(right);
 
         return ans;
     }
 
-    public void setCameFrom(Tile tile)
-    {
-        this.cameFrom=tile;
-    }
-
-    public Tile getCameFrom()
-    {
+    public Tile getCameFrom() {
         return this.cameFrom;
     }
+
+    public void setCameFrom(Tile tile) {
+        this.cameFrom = tile;
+    }
+
+    public String toString() {
+        return "(" + x + "," + y + ")";
+    }
+
 
 }

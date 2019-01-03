@@ -4,6 +4,8 @@ import java.util.ArrayList;
 public class Blinky extends Ghost {
     private boolean drawPath = true;
     private ArrayList<Tile> path;
+    private int newX;
+    private int newY;
 
     public Blinky(int x, int y) {
         super(x, y);
@@ -34,13 +36,24 @@ public class Blinky extends Ghost {
 
     public void getPath() {
         Tile[][] copy = Ghost.copy(GamePanel.board);
-
-        aStar astar = new aStar(GamePanel.board[this.x][this.y], GamePanel.board[GamePanel.p.getX()][GamePanel.p.getY()], copy);
+        System.out.println("\tGetPath: " + this.getX()+","+this.getY());
+        aStar astar = new aStar(copy[this.getX()][this.getY()], copy[GamePanel.p.getX()][GamePanel.p.getY()], copy);
         path = astar.A_Star();
+        System.out.println(path);
     }
 
     public void update() {
-        super.update();
+        path.clear();
         this.getPath();
+        Tile one = path.get(path.size() - 1);
+        Tile two = path.get(path.size() - 2);
+        newX=two.getX();
+        newY=two.getY();
+        if (isBorn) {
+            if (GamePanel.clock % (GamePanel.FPS / tilesPerSecond) == 0) {
+                this.setX(newX);
+                this.setY(newY);
+            }
+        }
     }
 }

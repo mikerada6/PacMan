@@ -28,6 +28,7 @@ public class aStar {
 
 
     public ArrayList<Tile> A_Star() {
+        System.out.println("Current: " + start +"\t\tGoal: " + goal);
         for (int x = 0; x < grid.length; x++) {
             for (int y = 0; y < grid[x].length; y++) {
                 grid[x][y].setScores(goal.getX(), goal.getY());

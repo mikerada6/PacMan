@@ -14,7 +14,7 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
     public static final int TILEHEIGHTCOUNT = 36;
     public static final int WIDTH = TILESIZE * TILEWIDTHCOUNT;
     public static final int HEIGHT = TILESIZE * TILEHEIGHTCOUNT;
-    public static final int FPS = 150;
+    public static final int FPS = 250;
     public static Tile[][] board;
     public static Player p;
     public static long clock = 0;
